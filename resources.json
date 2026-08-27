@@ -23,12 +23,12 @@
   },
   "created_resources": {
     "workspace_folder": "/Workspace/Shared/northpeak-advisor-git",
-    "catalog": "solution_builder",
+    "catalog": "rkm_sandbox_1_catalog",
     "schema": "demo_workshop_northpeak_retail_stockout_markdown_rescue",
     "warehouse_id": "a94beda3aab06fa4",
-    "pipeline_id": "pending_creation",
-    "metric_view_name": "solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.mv_store_position",
-    "genie_space_id": "pending_creation",
+    "pipeline_id": "pending_sdp_pipeline",
+    "metric_view_name": "rkm_sandbox_1_catalog.demo_workshop_northpeak_retail_stockout_markdown_rescue.mv_store_position",
+    "genie_space_id": "01f1a23dfd3210498c8888db2845a0c0",
     "dashboard_id": "01f1a23813a81b94ae279383bb440981"
   }
 }

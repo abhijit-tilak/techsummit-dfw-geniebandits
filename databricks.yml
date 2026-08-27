@@ -35,7 +35,7 @@ bundle:
 variables:
   catalog:
     description: "Unity Catalog for the NorthPeak demo resources"
-    default: solution_builder
+    default: rkm_sandbox_1_catalog
   schema:
     description: "Schema within the catalog (created by this bundle)"
     default: demo_workshop_northpeak_retail_stockout_markdown_rescue

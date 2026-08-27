@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1B3A5C"/>
+      <stop offset="60%" style="stop-color:#3C6997"/>
+      <stop offset="100%" style="stop-color:#E8F1F8"/>
+    </linearGradient>
+    <linearGradient id="fur" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A7A9E"/>
+      <stop offset="50%" style="stop-color:#3C6997"/>
+      <stop offset="100%" style="stop-color:#2A4F73"/>
+    </linearGradient>
+    <linearGradient id="fur_light" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6B9DBF"/>
+      <stop offset="100%" style="stop-color:#4A7A9E"/>
+    </linearGradient>
+    <linearGradient id="horn" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD060"/>
+      <stop offset="50%" style="stop-color:#FFB020"/>
+      <stop offset="100%" style="stop-color:#D4900A"/>
+    </linearGradient>
+    <linearGradient id="rock" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#5A6B7A"/>
+      <stop offset="100%" style="stop-color:#3A4A5A"/>
+    </linearGradient>
+    <linearGradient id="snow_cap" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF"/>
+      <stop offset="100%" style="stop-color:#D8E8F4"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#1B3A5C" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="250" cy="250" r="240" fill="url(#sky)"/>
+  <circle cx="250" cy="250" r="240" fill="none" stroke="#1B3A5C" stroke-width="4"/>
+  
+  <!-- Distant peaks (background) -->
+  <polygon points="50,420 130,320 210,420" fill="#2A4F73" opacity="0.4"/>
+  <polygon points="150,420 240,290 330,420" fill="#1B3A5C" opacity="0.3"/>
+  <polygon points="300,420 380,330 460,420" fill="#2A4F73" opacity="0.35"/>
+  
+  <!-- Snow on distant peaks -->
+  <polygon points="130,320 120,340 140,340" fill="white" opacity="0.4"/>
+  <polygon points="240,290 228,315 252,315" fill="white" opacity="0.35"/>
+  
+  <!-- Main rock/peak the goat stands on -->
+  <path d="M 140,400 L 180,340 L 220,360 L 280,330 L 340,350 L 370,400 L 380,480 L 120,480 Z" fill="url(#rock)" filter="url(#shadow)"/>
+  <path d="M 180,340 L 200,345 L 220,360 L 195,355 Z" fill="#6A7B8A" opacity="0.5"/>
+  <path d="M 280,330 L 310,340 L 340,350 L 305,342 Z" fill="#6A7B8A" opacity="0.4"/>
+  
+  <!-- Snow patches on rock -->
+  <ellipse cx="200" cy="365" rx="15" ry="5" fill="url(#snow_cap)" opacity="0.6"/>
+  <ellipse cx="310" cy="355" rx="12" ry="4" fill="url(#snow_cap)" opacity="0.5"/>
+  
+  <!-- === MOUNTAIN GOAT "SUMMIT" === -->
+  
+  <!-- Back legs -->
+  <path d="M 220,370 L 215,400 L 210,420 L 218,420 L 222,400 L 228,375" fill="#2A4F73" stroke="#1B3A5C" stroke-width="1"/>
+  <path d="M 245,372 L 248,400 L 252,420 L 260,420 L 256,400 L 250,375" fill="#2A4F73" stroke="#1B3A5C" stroke-width="1"/>
+  
+  <!-- Hooves (back) -->
+  <ellipse cx="214" cy="422" rx="5" ry="3" fill="#1B3A5C"/>
+  <ellipse cx="256" cy="422" rx="5" ry="3" fill="#1B3A5C"/>
+  
+  <!-- Body -->
+  <ellipse cx="260" cy="345" rx="55" ry="35" fill="url(#fur)" filter="url(#shadow)"/>
+  
+  <!-- Chest / lighter belly -->
+  <ellipse cx="285" cy="355" rx="25" ry="22" fill="url(#fur_light)" opacity="0.6"/>
+  
+  <!-- Front legs -->
+  <path d="M 285,365 L 282,395 L 278,415 L 286,415 L 289,395 L 292,368" fill="#3C6997" stroke="#1B3A5C" stroke-width="1"/>
+  <path d="M 300,362 L 305,390 L 308,415 L 316,415 L 312,390 L 307,365" fill="#2A4F73" stroke="#1B3A5C" stroke-width="1"/>
+  
+  <!-- Hooves (front) - planted firmly on rock edge -->
+  <ellipse cx="282" cy="417" rx="5" ry="3" fill="#1B3A5C"/>
+  <ellipse cx="312" cy="417" rx="5" ry="3" fill="#1B3A5C"/>
+  
+  <!-- Tail (small tuft) -->
+  <path d="M 205,340 Q 195,335 198,325 Q 202,330 208,335" fill="#4A7A9E"/>
+  
+  <!-- Neck -->
+  <path d="M 290,330 Q 310,310 315,295 Q 320,310 305,335" fill="url(#fur)"/>
+  
+  <!-- Head -->
+  <ellipse cx="320" cy="285" rx="22" ry="20" fill="url(#fur)"/>
+  
+  <!-- Snout / muzzle -->
+  <ellipse cx="338" cy="292" rx="12" ry="10" fill="#6B9DBF"/>
+  <ellipse cx="340" cy="290" rx="8" ry="7" fill="#8BB8D4" opacity="0.5"/>
+  
+  <!-- Nose -->
+  <ellipse cx="345" cy="292" rx="4" ry="3" fill="#1B3A5C"/>
+  
+  <!-- Eye -->
+  <circle cx="325" cy="278" r="5" fill="white"/>
+  <circle cx="326" cy="278" r="3" fill="#1B3A5C"/>
+  <circle cx="327" cy="277" r="1" fill="white"/>
+  
+  <!-- Ear -->
+  <path d="M 310,268 Q 305,255 312,258 Q 315,260 314,270" fill="#4A7A9E" stroke="#2A4F73" stroke-width="0.5"/>
+  
+  <!-- Beard (mountain goat characteristic) -->
+  <path d="M 330,298 Q 328,310 325,318 Q 330,315 332,305" fill="#6B9DBF"/>
+  <path d="M 333,300 Q 332,312 330,320 Q 335,316 336,306" fill="#5A8AAA" opacity="0.7"/>
+  
+  <!-- === HORNS (amber - the signature brand element) === -->
+  <path d="M 315,270 Q 308,245 295,235 Q 290,240 300,250 Q 310,258 313,272" fill="url(#horn)" stroke="#D4900A" stroke-width="1"/>
+  <path d="M 322,268 Q 325,245 320,230 Q 315,235 318,248 Q 320,258 321,270" fill="url(#horn)" stroke="#D4900A" stroke-width="1"/>
+  
+  <!-- Horn ridges -->
+  <path d="M 305,247 Q 308,245 310,248" fill="none" stroke="#D4900A" stroke-width="0.8" opacity="0.6"/>
+  <path d="M 308,242 Q 310,240 312,243" fill="none" stroke="#D4900A" stroke-width="0.8" opacity="0.6"/>
+  <path d="M 319,245 Q 321,243 322,246" fill="none" stroke="#D4900A" stroke-width="0.8" opacity="0.6"/>
+  <path d="M 320,238 Q 321,236 322,239" fill="none" stroke="#D4900A" stroke-width="0.8" opacity="0.6"/>
+  
+  <!-- Fur texture lines on body -->
+  <path d="M 230,335 Q 240,332 250,335" fill="none" stroke="#2A4F73" stroke-width="0.5" opacity="0.4"/>
+  <path d="M 240,345 Q 255,342 270,345" fill="none" stroke="#2A4F73" stroke-width="0.5" opacity="0.4"/>
+  <path d="M 260,355 Q 275,352 285,355" fill="none" stroke="#2A4F73" stroke-width="0.5" opacity="0.4"/>
+  
+  <!-- Amber glow behind horns (brand accent) -->
+  <circle cx="310" cy="245" r="20" fill="#FFB020" opacity="0.08"/>
+  
+  <!-- Small data viz element: tiny upward arrow near goat (subtle brand tie-in) -->
+  <polygon points="350,320 355,310 360,320" fill="#FFB020" opacity="0.7"/>
+  <rect x="354" y="320" width="2" height="8" fill="#FFB020" opacity="0.7"/>
+  
+  <!-- Wordmark at bottom -->
+  <text x="250" y="468" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" fill="white" text-anchor="middle" letter-spacing="1">SUMMIT</text>
+  <text x="250" y="486" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#D8E8F4" text-anchor="middle" letter-spacing="2.5" font-weight="400">NORTHPEAK RETAIL</text>
+</svg>
