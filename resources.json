@@ -1,0 +1,34 @@
+{
+  "short_description": "NorthPeak Retail \u2014 a live inventory view for store operations that surfaces shortfalls and prescribes the recovery move (transfer, expedite, or substitute) for a manager to approve, turning governed lakehouse data into action today. Targets ~$10M/yr revenue recaptured from fewer stockouts and ~$12M/yr margin protected from earlier markdowns, with capped auditable AI spend (~$200K/yr bounded, per-store attributable via Unity AI Gateway) and real-time store action replacing batch-reporting latency. Built for Priya Raghavan (SVP Retail Ops), Amara Nwachukwu (VP Finance), Tobias Lindqvist (Dir Data Engineering), and Hector Villalobos (Platform Engineering Lead).",
+  "capabilities": {
+    "buildable": [
+      "synthetic-data-gen",
+      "sdp",
+      "metric-views",
+      "aibi-dashboards",
+      "genie",
+      "databricks-apps",
+      "lakebase"
+    ],
+    "optional": [
+      "ml-training-serving"
+    ],
+    "talking_track": [
+      "lakeflow-connect",
+      "unity-catalog",
+      "ai-gateway",
+      "genie-one",
+      "genie-code"
+    ]
+  },
+  "created_resources": {
+    "workspace_folder": "/Workspace/Shared/northpeak-advisor-git",
+    "catalog": "solution_builder",
+    "schema": "demo_workshop_northpeak_retail_stockout_markdown_rescue",
+    "warehouse_id": "a94beda3aab06fa4",
+    "pipeline_id": "pending_creation",
+    "metric_view_name": "solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.mv_store_position",
+    "genie_space_id": "pending_creation",
+    "dashboard_id": "01f1a23813a81b94ae279383bb440981"
+  }
+}

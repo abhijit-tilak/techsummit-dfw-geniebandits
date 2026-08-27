@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "config": {
+    "sample_questions": [
+      {"id": "10000000000000000000000000000001", "question": ["How much are we losing to stockouts, and what's our markdown exposure right now?"]},
+      {"id": "10000000000000000000000000000002", "question": ["Where are we short and where are we over-stocked? Break it down by climate zone."]},
+      {"id": "10000000000000000000000000000003", "question": ["Which products are driving both problems?"]},
+      {"id": "10000000000000000000000000000004", "question": ["Store 214 is short on the Summit Down Parka — how bad is it, and is there stock nearby?"]},
+      {"id": "10000000000000000000000000000005", "question": ["What's the best recovery move for Store 214, and how much would it recapture?"]},
+      {"id": "10000000000000000000000000000006", "question": ["Across all open shortfalls, how much could we recapture, and by which move?"]},
+      {"id": "10000000000000000000000000000007", "question": ["Which southern stores are the biggest markdown risk on these SKUs?"]}
+    ]
+  },
+  "data_sources": {
+    "tables": [
+      {"identifier": "solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.gold_open_shortfalls"},
+      {"identifier": "solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.gold_recovery_recommendations"},
+      {"identifier": "solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.gold_store_sku_position"},
+      {"identifier": "solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.mv_store_position"},
+      {"identifier": "solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.raw_products"},
+      {"identifier": "solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.raw_stores"}
+    ]
+  },
+  "instructions": {
+    "example_question_sqls": [
+      {
+        "id": "20000000000000000000000000000001",
+        "question": ["How much are we losing to stockouts, and what's our markdown exposure right now?"],
+        "sql": ["SELECT ROUND(MEASURE(lost_sales_exposure)) AS lost_sales_usd, ROUND(MEASURE(markdown_exposure)) AS markdown_usd\n", "FROM solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.mv_store_position"]
+      },
+      {
+        "id": "20000000000000000000000000000002",
+        "question": ["Where are we short and where are we over-stocked? Break it down by climate zone."],
+        "sql": ["SELECT climate_zone, MEASURE(stockout_count) AS stockouts, MEASURE(overstock_count) AS overstocks\n", "FROM solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.mv_store_position\n", "GROUP BY climate_zone ORDER BY climate_zone"]
+      },
+      {
+        "id": "20000000000000000000000000000003",
+        "question": ["Which products are driving both problems?"],
+        "sql": ["SELECT product_name, position_status, COUNT(1) AS positions\n", "FROM solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.gold_store_sku_position\n", "WHERE position_status IN ('stockout','at_risk','overstock')\n", "GROUP BY product_name, position_status ORDER BY positions DESC"]
+      },
+      {
+        "id": "20000000000000000000000000000004",
+        "question": ["Store 214 is short on the Summit Down Parka — how bad is it, and is there stock nearby?"],
+        "sql": ["SELECT store_id, product_name, on_hand_units, ROUND(avg_daily_velocity,1) AS daily_velocity, ROUND(lost_sales_exposure_usd) AS lost_sales_usd,\n", "  nearest_surplus_store_id, nearest_surplus_on_hand, nearest_surplus_distance_km\n", "FROM solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.gold_open_shortfalls\n", "WHERE store_id='STORE-0214' AND product_id='SKU-APP-04412'"]
+      },
+      {
+        "id": "20000000000000000000000000000005",
+        "question": ["What's the best recovery move for Store 214, and how much would it recapture?"],
+        "sql": ["SELECT recommended_move, recommended_source_store_id, recommended_units, ROUND(predicted_recaptured_usd) AS recaptured_usd, ROUND(predicted_net_value_usd) AS net_value_usd, move_ranking\n", "FROM solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.gold_recovery_recommendations\n", "WHERE store_id='STORE-0214' AND product_id='SKU-APP-04412'"]
+      },
+      {
+        "id": "20000000000000000000000000000006",
+        "question": ["Across all open shortfalls, how much could we recapture, and by which move?"],
+        "sql": ["SELECT recommended_move, COUNT(1) AS shortfalls, ROUND(SUM(predicted_recaptured_usd)) AS recaptured_usd\n", "FROM solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.gold_recovery_recommendations\n", "GROUP BY recommended_move ORDER BY recaptured_usd DESC"]
+      },
+      {
+        "id": "20000000000000000000000000000007",
+        "question": ["Which southern stores are the biggest markdown risk on these SKUs?"],
+        "sql": ["SELECT store_name, city, product_name, on_hand_units, ROUND(weeks_of_supply,1) AS weeks_of_supply, ROUND(markdown_exposure_usd) AS markdown_usd\n", "FROM solution_builder.demo_workshop_northpeak_retail_stockout_markdown_rescue.gold_store_sku_position\n", "WHERE position_status='overstock'\n", "ORDER BY markdown_exposure_usd DESC LIMIT 20"]
+      }
+    ],
+    "text_instructions": [
+      {
+        "id": "30000000000000000000000000000001",
+        "content": [
+          "You analyze NorthPeak Retail store-operations data for Priya Raghavan (SVP Retail Operations, non-technical).\n",
+          "CONTEXT: NorthPeak loses ~$80M/yr to stockouts (~4% of sales) and ~$120M/yr to markdowns company-wide — same root cause: inventory in the wrong store at the wrong time. An early cold snap ~3 weeks ago is the live slice: the SAME 5 cold-weather SKUs (Summit Down Parka SKU-APP-04412 + 4 others) are STOCKED OUT in ~30 northern stores (real demand, lost sales) while sitting as DEAD STOCK in ~40 southern stores (markdown clock running). One misallocation, two symptoms.\n",
+          "The recovery recommendation ranks moves by NET recaptured value (recaptured − cost − margin impact), never gross — so a fix never trades a stockout for a worse markdown.\n",
+          "BASELINES: A healthy position has weeks_of_supply between ~1 and ~8. position_status is the single signal: 'stockout' (on_hand 0, still selling), 'at_risk' (<1 week supply), 'overstock' (>8 weeks + high markdown risk), 'healthy'.\n",
+          "HEADLINE NUMBERS — always answer from mv_store_position (same definitions the dashboard tiles use): 'how much are we losing to stockouts?' → MEASURE(lost_sales_exposure); 'what's our markdown exposure?' → MEASURE(markdown_exposure); 'how many positions are stocked out in the North?' → MEASURE(stockout_count) filtered climate_zone='North'.\n",
+          "INVESTIGATION FLOW for 'where are we short and over-stocked, and why?': 1) mv_store_position → stockout_count + overstock_count by climate_zone (North=stockouts, South=overstock). 2) gold_store_sku_position → the divergence is confined to the 5 cold_weather apparel SKUs (GROUP BY product_name, position_status). 3) gold_open_shortfalls WHERE store_id='STORE-0214' → the hero shortfall; nearest_surplus_store_id holds the units. 4) gold_recovery_recommendations → the recommended move + predicted recaptured $. Conclude and suggest ranking the recovery move for Store 214.\n",
+          "RECOVERY FOLLOW-UP: 'best recovery move for Store 214's parka?' → gold_recovery_recommendations for that (store, SKU) → recommended_move + predicted_recaptured_usd + move_ranking. 'How much could we recapture across all open shortfalls?' → SUM(predicted_recaptured_usd). 'How many shortfalls are best solved by transfer vs expedite?' → GROUP BY recommended_move.\n",
+          "TONE: concise, business-first, dollars not row counts. Priya is non-technical. Amara Nwachukwu (VP Finance, Technology) also uses this space — she cares about total AI spend, cost per recommendation, and per-store attribution. Always include cost context when discussing recommendations."
+        ]
+      }
+    ]
+  }
+}

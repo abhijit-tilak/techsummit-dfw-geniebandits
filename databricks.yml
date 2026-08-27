@@ -1,0 +1,280 @@
+# Databricks Asset Bundle — NorthPeak Retail (Stockout & Markdown Rescue).
+#
+# Re-creates the full demo on ANY workspace from scratch: schema + raw_data
+# volume + SDP pipeline + AI/BI dashboard + Databricks App shells (created by
+# `bundle deploy`); then a setup job fills them in on `bundle run`:
+#   generate_data → run_pipeline → deploy_metric_view + deploy_genie
+#   → grant_app_uc → export_resources (exits a JSON manifest of every ID).
+#
+# NorthPeak loses ~$80M/yr to stockouts (~4% of sales) and ~$120M/yr to
+# markdowns from one root cause — inventory in the wrong store at the wrong
+# time. The cold snap is the live slice: cold-weather apparel sold out in the
+# North while the same styles pile toward markdown in the South. The app ranks
+# the recovery move (transfer / expedite / substitute) by NET recaptured value,
+# and the assistant's AI spend is bounded + per-store attributable via AI Gateway.
+#
+# ── 5-command deploy (the user runs these; authoring does NOT bundle-deploy) ──
+#   1. ./app/scripts/lakebase_setup_db.sh --db-name dbgen_northpeak      # Lakebase DB (pre-deploy)
+#   2. databricks bundle deploy --var catalog=… --var schema=… --var warehouse_id=…
+#   3. databricks bundle run northpeak_setup --var …
+#   4. ./app/scripts/lakebase_grant_app_credential.sh --app-name dbgen-northpeak --project-id dbdemos-asset-generator --db-name dbgen_northpeak
+#   5. ./app/scripts/finalize_app.sh                                     # harvest IDs → app.yaml env → deploy app
+#
+# The app's runtime env vars (Genie space id, dashboard id, catalog/schema) are
+# assembled by finalize_app.sh AFTER the setup job runs — the bundle can't know
+# the Genie space id at deploy time.
+#
+# ⚠️ NEVER `databricks apps update --json` a deployed app out of band — it
+#    replaces the whole app spec and silently drops the `resources` bindings
+#    (→ Lakebase SP role deprovisioned → Postgres auth fails). Change app config
+#    ONLY here (+ redeploy) or in app.yaml (+ finalize_app.sh).
+
+bundle:
+  name: northpeak-retail
+
+variables:
+  catalog:
+    description: "Unity Catalog for the NorthPeak demo resources"
+    default: solution_builder
+  schema:
+    description: "Schema within the catalog (created by this bundle)"
+    default: demo_workshop_northpeak_retail_stockout_markdown_rescue
+  warehouse_id:
+    description: "SQL Warehouse ID — powers the dashboard, Genie, and app analytics"
+
+  # ── App + Lakebase ────────────────────────────────────────────────────
+  app_name:
+    description: "Workspace app name (must be unique per workspace)"
+    default: "dbgen-northpeak"
+  lakebase_project_id:
+    description: "Lakebase project — reused if it already exists"
+    default: "dbdemos-asset-generator"
+  lakebase_branch_id:
+    description: "Lakebase branch within the project"
+    default: "production"
+  lakebase_database_name:
+    description: "Postgres database name for the NorthPeak app (convention: dbgen_<demo>)"
+    default: "dbgen_northpeak"
+  lakebase_database_id:
+    description: |
+      Lakebase database resource ID — the slug in the App's `postgres` binding
+      path. `db-` + database_name with underscores → hyphens.
+      Created by app/scripts/lakebase_setup_db.sh.
+    default: "db-dbgen-northpeak"
+
+# Build the app locally before sync — produces app/dist/server.js +
+# app/client/dist/ (both gitignored). sync.include whitelists them past
+# .gitignore so the Apps container has them.
+artifacts:
+  default:
+    build: ./app/scripts/build-app.sh
+
+sync:
+  include:
+    - "app/dist/**"          # tsdown output (server bundle)
+    - "app/client/dist/**"   # vite output (client bundle)
+    - "app/drizzle/**"       # generated Drizzle SQL migrations (read at boot)
+  # node_modules (hundreds of MB) otherwise gets dragged into the Apps
+  # deployment zip and "Preparing source code" stalls. The container runs its
+  # own npm install against the shipped lockfile.
+  exclude:
+    - "app/node_modules/**"
+    - "app/.venv/**"
+    - "app/.env"
+    - "app/.env.*"
+    - "app/.preview.pgid"
+    - "app/.DS_Store"
+    - "app/playwright-report/**"
+    - "app/test-results/**"
+    - "app/tests/**"
+
+targets:
+  dev:
+    default: true
+    mode: development   # prefixes resource names with `[dev <user>]` + the
+                        # schema with `dev_<user>_`. Downstream tasks resolve
+                        # the prefixed schema via ${resources.schemas.demo_schema.name}.
+  prod:
+    mode: production
+
+resources:
+  # ──────────────────────────────────────────────────────────────────────────
+  # Schema + raw-data volume
+  # ──────────────────────────────────────────────────────────────────────────
+  schemas:
+    demo_schema:
+      catalog_name: ${var.catalog}
+      name: ${var.schema}
+      comment: "NorthPeak Retail stockout/markdown rescue — synthetic store-ops data."
+
+  volumes:
+    raw_data:
+      catalog_name: ${var.catalog}
+      schema_name: ${resources.schemas.demo_schema.name}
+      name: raw_data
+      volume_type: MANAGED
+      comment: "Raw parquet landing zone — generate_data.py writes here; SDP silver reads it via read_files()."
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # SDP pipeline — transformation/*.sql builds silver + gold. The SQL reads the
+  # Volume via read_files('/Volumes/${catalog}/${schema}/raw_data/...'); those
+  # ${...} are the pipeline `configuration` values below (NOT bundle vars), so
+  # they resolve to the SAME (dev-prefixed) schema the tasks write to.
+  # ──────────────────────────────────────────────────────────────────────────
+  pipelines:
+    northpeak_operations:
+      name: "[${bundle.target}] NorthPeak Operations"
+      catalog: ${resources.schemas.demo_schema.catalog_name}
+      target: ${resources.schemas.demo_schema.name}
+      serverless: true
+      photon: true
+      development: true
+      channel: PREVIEW
+      configuration:
+        catalog: ${resources.schemas.demo_schema.catalog_name}
+        schema: ${resources.schemas.demo_schema.name}
+      libraries:
+        - file:
+            path: ./transformation/01_silver.sql
+        - file:
+            path: ./transformation/02_gold.sql
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # AI/BI dashboard — dataset_catalog / dataset_schema rebind the schema-less
+  # dataset queries per-target, so the SAME dashboard.lvdash.json works on any
+  # catalog/schema. Requires CLI v0.283.0+.
+  # ──────────────────────────────────────────────────────────────────────────
+  dashboards:
+    northpeak_dashboard:
+      display_name: "[${bundle.target}] NorthPeak Store Operations"
+      file_path: ./dashboard.lvdash.json
+      warehouse_id: ${var.warehouse_id}
+      dataset_catalog: ${resources.schemas.demo_schema.catalog_name}
+      dataset_schema: ${resources.schemas.demo_schema.name}
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Databricks App — the NorthPeak Store Ops console (Operations map + shortfall
+  # queue, the governed AI assistant, embedded dashboard). Reads Delta via the
+  # warehouse + Lakebase for low-latency per-store reads and the write surface.
+  # ──────────────────────────────────────────────────────────────────────────
+  apps:
+    northpeak_app:
+      name: ${var.app_name}
+      description: "NorthPeak Store Ops — investigate a shortfall, rank the net-value recovery move, approve it. Governed data, governed recommendation, bounded AI."
+      source_code_path: ./app
+      lifecycle:
+        prevent_destroy: true
+      user_api_scopes:
+        - serving.serving-endpoints   # agent LLM (/serving-endpoints/*)
+        - ai-gateway                  # ⚠️ REQUIRED for the Responses API (routes through AI Gateway)
+        - dashboards.genie            # ask_data → Genie
+        - sql                         # SQL warehouse
+        - sql.statement-execution     # synchronous SQL exec (analytics queries)
+        - postgres                    # Lakebase
+        - catalog.catalogs:read
+        - catalog.schemas:read
+        - catalog.tables:read
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+        - name: postgres
+          postgres:
+            branch: projects/${var.lakebase_project_id}/branches/${var.lakebase_branch_id}
+            database: projects/${var.lakebase_project_id}/branches/${var.lakebase_branch_id}/databases/${var.lakebase_database_id}
+            permission: CAN_CONNECT_AND_CREATE
+      # Plain-value env (catalog/schema/genie_space_id/dashboard_id) is NOT here
+      # — finalize_app.sh writes it into app.yaml after the setup job. The
+      # binding-derived vars (DATABRICKS_WAREHOUSE_ID, LAKEBASE_ENDPOINT) come
+      # from the bindings above via app.yaml `valueFrom:` entries.
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Setup job — everything that must run AFTER `bundle deploy` creates the
+  # resource shells. Cross-task IDs flow via {{tasks.<key>.values.<key>}}.
+  # ──────────────────────────────────────────────────────────────────────────
+  jobs:
+    northpeak_setup:
+      name: "[${bundle.target}] NorthPeak Setup"
+      description: "data → pipeline → metric view + genie → app grants → export IDs"
+      tasks:
+        - task_key: generate_data
+          notebook_task:
+            notebook_path: ./data_generation/generate_data.py
+            base_parameters:
+              catalog: ${resources.schemas.demo_schema.catalog_name}
+              schema:  ${resources.schemas.demo_schema.name}
+          environment_key: sdk_default
+
+        - task_key: run_pipeline
+          depends_on: [{ task_key: generate_data }]
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.northpeak_operations.id}
+
+        # Metric view — no PySpark API, so this runs the CREATE … WITH METRICS
+        # YAML DDL inline over gold_store_sku_position.
+        - task_key: deploy_metric_view
+          depends_on: [{ task_key: run_pipeline }]
+          notebook_task:
+            notebook_path: ./src/deploy/deploy_metric_view.py
+            base_parameters:
+              catalog: ${resources.schemas.demo_schema.catalog_name}
+              schema:  ${resources.schemas.demo_schema.name}
+          environment_key: sdk_default
+
+        - task_key: deploy_genie
+          depends_on: [{ task_key: deploy_metric_view }]
+          notebook_task:
+            notebook_path: ./src/deploy/deploy_genie.py
+            base_parameters:
+              catalog:      ${resources.schemas.demo_schema.catalog_name}
+              schema:       ${resources.schemas.demo_schema.name}
+              warehouse_id: ${var.warehouse_id}
+          environment_key: sdk_latest
+
+        # Grant the app SP UC read privileges (USE_CATALOG/SCHEMA, SELECT,
+        # READ_VOLUME). Without these the app's first /api/config hits
+        # INSUFFICIENT_PERMISSIONS. Distinct from lakebase_grant_app_credential.sh
+        # (which grants on the Postgres plane).
+        - task_key: grant_app_uc
+          depends_on: [{ task_key: run_pipeline }]
+          notebook_task:
+            notebook_path: ./src/deploy/grant_app_uc.py
+            base_parameters:
+              catalog:  ${resources.schemas.demo_schema.catalog_name}
+              schema:   ${resources.schemas.demo_schema.name}
+              app_name: ${var.app_name}
+          environment_key: sdk_latest
+
+        # Final task: exit a JSON manifest of every resolved ID. finalize_app.sh
+        # reads it back via get-run-output (notebook exit value IS retrievable
+        # post-run; task-values are NOT).
+        - task_key: export_resources
+          depends_on: [{ task_key: deploy_genie }, { task_key: grant_app_uc }]
+          notebook_task:
+            notebook_path: ./src/deploy/export_resources.py
+            base_parameters:
+              app_name:       ${var.app_name}
+              catalog:        ${resources.schemas.demo_schema.catalog_name}
+              schema:         ${resources.schemas.demo_schema.name}
+              dashboard_id:   ${resources.dashboards.northpeak_dashboard.id}
+              pipeline_id:    ${resources.pipelines.northpeak_operations.id}
+              warehouse_id:   ${var.warehouse_id}
+              genie_space_id: "{{tasks.deploy_genie.values.genie_space_id}}"
+          environment_key: sdk_latest
+
+      # Serverless environments. `client: "4"` is the standard tier; the Genie
+      # SDK APIs need databricks-sdk>=0.114.0.
+      environments:
+        - environment_key: sdk_default
+          spec:
+            client: "4"
+            dependencies:
+              - numpy
+              - pandas
+              - faker
+        - environment_key: sdk_latest
+          spec:
+            client: "4"
+            dependencies:
+              - "databricks-sdk>=0.114.0"
