@@ -1,0 +1,18 @@
+{
+  "loaded_at": "2026-08-28T04:32:46.146674+00:00",
+  "branch": "geniebandits-dev",
+  "embedding_model": "databricks-gte-large-en",
+  "embedding_dims": 1024,
+  "products_with_embedding": 200,
+  "products_matching_fulltext_jacket": 1,
+  "indexes": [
+    {
+      "name": "products_search_gin",
+      "def": "CREATE INDEX products_search_gin ON northpeak_ops.products USING gin (search_document)"
+    },
+    {
+      "name": "products_embedding_hnsw",
+      "def": "CREATE INDEX products_embedding_hnsw ON northpeak_ops.products USING hnsw (embedding vector_cosine_ops)"
+    }
+  ]
+}

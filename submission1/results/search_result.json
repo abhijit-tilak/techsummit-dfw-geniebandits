@@ -1,0 +1,100 @@
+{
+  "ran_at": "2026-08-28T04:34:44.118779+00:00",
+  "branch": "geniebandits-dev",
+  "natural_language_query": "warm waterproof insulated coat for freezing winter weather",
+  "lexical_tsquery": "warm | waterproof | insulated | coat | freezing | winter | weather",
+  "method": "hybrid: full-text (tsvector/GIN) + vector (pgvector/HNSW), RRF k=60",
+  "embedding_model": "databricks-gte-large-en",
+  "top_results": [
+    {
+      "product_id": "SKU-APP-04415",
+      "product_name": "Tundra Insulated Boots",
+      "category": "Apparel",
+      "seasonality": "cold_weather",
+      "ft_rank": 9,
+      "vec_rank": 1,
+      "rrf_score": "0.03089"
+    },
+    {
+      "product_id": "SKU-APP-04416",
+      "product_name": "Polar Wool Beanie",
+      "category": "Apparel",
+      "seasonality": "cold_weather",
+      "ft_rank": 43,
+      "vec_rank": 2,
+      "rrf_score": "0.02584"
+    },
+    {
+      "product_id": "SKU-APP-04413",
+      "product_name": "Alpine Fleece Jacket",
+      "category": "Apparel",
+      "seasonality": "cold_weather",
+      "ft_rank": 41,
+      "vec_rank": 3,
+      "rrf_score": "0.02577"
+    },
+    {
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "category": "Apparel",
+      "seasonality": "cold_weather",
+      "ft_rank": 40,
+      "vec_rank": 4,
+      "rrf_score": "0.02563"
+    },
+    {
+      "product_id": "SKU-APP-04414",
+      "product_name": "Glacier Thermal Base Layer",
+      "category": "Apparel",
+      "seasonality": "cold_weather",
+      "ft_rank": 42,
+      "vec_rank": 5,
+      "rrf_score": "0.02519"
+    },
+    {
+      "product_id": "SKU-APP-10001",
+      "product_name": "Apparel Item 2",
+      "category": "Apparel",
+      "seasonality": "warm_weather",
+      "ft_rank": 11,
+      "vec_rank": 40,
+      "rrf_score": "0.02408"
+    },
+    {
+      "product_id": "SKU-APP-10010",
+      "product_name": "Apparel Item 11",
+      "category": "Apparel",
+      "seasonality": "warm_weather",
+      "ft_rank": 14,
+      "vec_rank": 39,
+      "rrf_score": "0.02361"
+    },
+    {
+      "product_id": "SKU-APP-10005",
+      "product_name": "Apparel Item 6",
+      "category": "Apparel",
+      "seasonality": "warm_weather",
+      "ft_rank": 13,
+      "vec_rank": 41,
+      "rrf_score": "0.02360"
+    },
+    {
+      "product_id": "SKU-APP-10017",
+      "product_name": "Apparel Item 18",
+      "category": "Apparel",
+      "seasonality": "warm_weather",
+      "ft_rank": 17,
+      "vec_rank": 36,
+      "rrf_score": "0.02340"
+    },
+    {
+      "product_id": "SKU-APP-10034",
+      "product_name": "Apparel Item 35",
+      "category": "Apparel",
+      "seasonality": "warm_weather",
+      "ft_rank": 20,
+      "vec_rank": 37,
+      "rrf_score": "0.02281"
+    }
+  ]
+}
