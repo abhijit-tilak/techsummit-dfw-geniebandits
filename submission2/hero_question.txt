@@ -1,0 +1,43 @@
+HERO QUESTION (the decision, not a lookup)
+
+  "Store STORE-0108 (Missoula) is stocked out of the Summit Down Parka
+   (SKU-APP-04412) with $53569.28 in annualized lost-sales exposure —
+   what is the best recovery move, and approve it?"
+
+This is answered as a decision loop (surface -> prescribe -> approve -> act -> reflect),
+not a dashboard lookup. The linked record IDs below form the decision chain across the
+submitted exports.
+
+DECISION CHAIN (linked record IDs)
+
+  1. SURFACE  view_result.json
+       hero row: store_id=STORE-0108, product_id=SKU-APP-04412
+       flag=NEEDS_DECISION, priority ranked #1 by lost_sales_exposure_usd=53569.28
+       (read from the read-only Build 1 synced table public.store_sku_position_synced)
+
+  2. TRIGGER  state_table.json  (event_type='trigger')
+       scheduled job fired the re-score; job_run_ref=512688725663836
+       flagged_count=771
+
+  3. ASSIST   assist_log.jsonl
+       explanation + what-if for SKU-APP-04412, retrieving substitute candidates
+       from the Build 1 Lakebase Search index: SKU-APP-04415, SKU-APP-04413, SKU-APP-04414, SKU-APP-04416, SKU-APP-10001
+       drafted memo -> drafted_sample.md
+
+  4. ACT      writeback_table.json  (writable table northpeak_ops.recovery_actions)
+       action_id=10: transfer 60 units of SKU-APP-04412
+       from source_store_id=STORE-0213 to STORE-0108
+       proposed_by=assistant -> corrected+approved_by=priya.raghavan
+       created_at=2026-08-28 05:41:47.139038+00:00 committed_at=2026-08-28 05:41:47.519976+00:00
+
+  5. DECISION state_table.json  (event_type='decision')
+       event references action_id=10, decision='corrected_and_approved'
+
+  6. CLOSED LOOP  closed_loop_view.json
+       next read of the live view for STORE-0108/SKU-APP-04412 -> flag=COMMITTED_APPROVED
+
+KEY IDS
+  store_id   = STORE-0108
+  product_id = SKU-APP-04412
+  action_id  = 10
+  scheduled job_run_ref = 512688725663836

@@ -1,0 +1,20 @@
+{
+  "exported_at": "2026-08-28T05:41:48.444044+00:00",
+  "hero_store": "STORE-0108",
+  "hero_product": "SKU-APP-04412",
+  "flag_after_commit": "COMMITTED_APPROVED",
+  "row": {
+    "store_id": "STORE-0108",
+    "city": "Missoula",
+    "product_id": "SKU-APP-04412",
+    "product_name": "Summit Down Parka",
+    "on_hand_units": 0,
+    "lost_sales_exposure_usd": "53569.28",
+    "priority_score": "53569.28",
+    "flag": "COMMITTED_APPROVED",
+    "action_id": 10,
+    "chosen_move": "transfer",
+    "action_status": "approved",
+    "committed_at": "2026-08-28 05:41:47.519976+00:00"
+  }
+}
