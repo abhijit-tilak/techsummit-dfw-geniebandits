@@ -1,0 +1,23 @@
+{
+  "written_at": "2026-08-28T04:30:11.765611+00:00",
+  "branch": "geniebandits-dev",
+  "note": "recovery_actions + action_status_history are writable OLTP tables, distinct from the read-only synced table public.store_sku_position_synced.",
+  "inserted_and_updated_action": {
+    "action_id": 1,
+    "store_id": "STORE-0001",
+    "product_id": "SKU-APP-04412",
+    "chosen_move": "transfer",
+    "source_store_id": "STORE-0213",
+    "units": 40,
+    "net_recaptured_value": 31070.18,
+    "status": "approved",
+    "approved_by": "priya.raghavan"
+  },
+  "audit_history_from_trigger": [
+    {
+      "old_status": "pending",
+      "new_status": "approved",
+      "changed_by": "priya.raghavan"
+    }
+  ]
+}

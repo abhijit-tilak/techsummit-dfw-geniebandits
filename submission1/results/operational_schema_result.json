@@ -1,0 +1,42 @@
+{
+  "applied_at": "2026-08-28T04:30:11.566944+00:00",
+  "branch": "geniebandits-dev",
+  "schema": "northpeak_ops",
+  "row_counts": {
+    "stores": 400,
+    "products": 200,
+    "recovery_actions": 1
+  },
+  "foreign_keys": [
+    {
+      "constraint": "action_status_history_action_id_fkey",
+      "table": "action_status_history",
+      "column": "action_id",
+      "references": "recovery_actions(action_id)"
+    },
+    {
+      "constraint": "recovery_actions_product_id_fkey",
+      "table": "recovery_actions",
+      "column": "product_id",
+      "references": "products(product_id)"
+    },
+    {
+      "constraint": "recovery_actions_source_store_id_fkey",
+      "table": "recovery_actions",
+      "column": "source_store_id",
+      "references": "stores(store_id)"
+    },
+    {
+      "constraint": "recovery_actions_store_id_fkey",
+      "table": "recovery_actions",
+      "column": "store_id",
+      "references": "stores(store_id)"
+    },
+    {
+      "constraint": "recovery_actions_substitute_product_id_fkey",
+      "table": "recovery_actions",
+      "column": "substitute_product_id",
+      "references": "products(product_id)"
+    }
+  ]
+}
