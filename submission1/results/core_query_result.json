@@ -1,0 +1,120 @@
+{
+  "ran_at": "2026-08-28T04:38:39.878825+00:00",
+  "branch": "geniebandits-dev",
+  "question": "Which northern stores are stocked out of a cold-weather SKU with the highest lost-sales exposure, and is a recovery move approved?",
+  "server_execution_ms": 10.59,
+  "client_round_trip_ms_best_of_5": 103.06,
+  "row_count": 10,
+  "rows": [
+    {
+      "store_id": "STORE-0108",
+      "city": "Missoula",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "53569.28",
+      "chosen_move": "transfer",
+      "action_status": "approved",
+      "net_recaptured_value": 45000.0
+    },
+    {
+      "store_id": "STORE-0167",
+      "city": "Salem",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "52497.90",
+      "chosen_move": "transfer",
+      "action_status": "approved",
+      "net_recaptured_value": 45000.0
+    },
+    {
+      "store_id": "STORE-0133",
+      "city": "Billings",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "52497.90",
+      "chosen_move": "transfer",
+      "action_status": "approved",
+      "net_recaptured_value": 45000.0
+    },
+    {
+      "store_id": "STORE-0181",
+      "city": "Salem",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "51426.52",
+      "chosen_move": null,
+      "action_status": null,
+      "net_recaptured_value": null
+    },
+    {
+      "store_id": "STORE-0115",
+      "city": "Billings",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "49283.75",
+      "chosen_move": null,
+      "action_status": null,
+      "net_recaptured_value": null
+    },
+    {
+      "store_id": "STORE-0197",
+      "city": "Spokane",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "49283.75",
+      "chosen_move": null,
+      "action_status": null,
+      "net_recaptured_value": null
+    },
+    {
+      "store_id": "STORE-0007",
+      "city": "Boston",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "48212.35",
+      "chosen_move": null,
+      "action_status": null,
+      "net_recaptured_value": null
+    },
+    {
+      "store_id": "STORE-0097",
+      "city": "Columbus",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "48212.35",
+      "chosen_move": null,
+      "action_status": null,
+      "net_recaptured_value": null
+    },
+    {
+      "store_id": "STORE-0024",
+      "city": "Hartford",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "48212.35",
+      "chosen_move": null,
+      "action_status": null,
+      "net_recaptured_value": null
+    },
+    {
+      "store_id": "STORE-0175",
+      "city": "Bend",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": "48212.35",
+      "chosen_move": null,
+      "action_status": null,
+      "net_recaptured_value": null
+    }
+  ]
+}
