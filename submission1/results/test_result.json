@@ -1,0 +1,42 @@
+{
+  "ran_at": "2026-08-28T04:40:22.316526+00:00",
+  "branch": "geniebandits-dev",
+  "all_passed": true,
+  "total": 8,
+  "passed": 8,
+  "tests": [
+    {
+      "test": "fk_no_orphan_stores",
+      "passed": true
+    },
+    {
+      "test": "fk_no_orphan_products",
+      "passed": true
+    },
+    {
+      "test": "audit_trigger_populated",
+      "passed": true
+    },
+    {
+      "test": "hybrid_indexes_present",
+      "passed": true
+    },
+    {
+      "test": "embedding_coverage_complete",
+      "passed": true
+    },
+    {
+      "test": "check_constraint_rejects_bad_move",
+      "passed": true
+    },
+    {
+      "test": "synced_and_writable_tables_distinct",
+      "passed": true
+    },
+    {
+      "test": "synced_table_mirrors_source_rows",
+      "passed": true,
+      "synced_rows": 14000
+    }
+  ]
+}
