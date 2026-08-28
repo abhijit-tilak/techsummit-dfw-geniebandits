@@ -1,0 +1,82 @@
+{
+  "queried_at": "2026-08-28T04:36:27.213106+00:00",
+  "branch": "geniebandits-dev",
+  "synced_table": "public.store_sku_position_synced",
+  "source_uc_table": "rkm_sandbox_1_catalog.demo_workshop_northpeak_retail_stockout_markdown_rescue.gold_store_sku_position",
+  "sync_mode": "SNAPSHOT",
+  "total_rows": 14000,
+  "sample_rows": [
+    {
+      "store_id": "STORE-0108",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "position_status": "stockout",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": 53569.28,
+      "markdown_exposure_usd": 0.0
+    },
+    {
+      "store_id": "STORE-0167",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "position_status": "stockout",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": 52497.9,
+      "markdown_exposure_usd": 0.0
+    },
+    {
+      "store_id": "STORE-0133",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "position_status": "stockout",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": 52497.9,
+      "markdown_exposure_usd": 0.0
+    },
+    {
+      "store_id": "STORE-0181",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "position_status": "stockout",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": 51426.52,
+      "markdown_exposure_usd": 0.0
+    },
+    {
+      "store_id": "STORE-0115",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "position_status": "stockout",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": 49283.75,
+      "markdown_exposure_usd": 0.0
+    },
+    {
+      "store_id": "STORE-0197",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "position_status": "stockout",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": 49283.75,
+      "markdown_exposure_usd": 0.0
+    },
+    {
+      "store_id": "STORE-0007",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "position_status": "stockout",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": 48212.35,
+      "markdown_exposure_usd": 0.0
+    },
+    {
+      "store_id": "STORE-0024",
+      "product_id": "SKU-APP-04412",
+      "product_name": "Summit Down Parka",
+      "position_status": "stockout",
+      "on_hand_units": 0,
+      "lost_sales_exposure_usd": 48212.35,
+      "markdown_exposure_usd": 0.0
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "ran_at": "2026-08-28T04:41:56.304096+00:00",
+  "throwaway_branch": "geniebandits-forecast",
+  "branch_ttl": "14400s (auto-expires; idle cost ~0)",
+  "scenario": "cold snap intensifies: demand x1.5",
+  "baseline_stockout_exposure_usd": 15897955.54,
+  "projected_stockout_exposure_usd": 23846933.31,
+  "delta_usd": 7948977.77,
+  "isolation_check_dev_has_scenario_table": false,
+  "note": "The scenario table exists ONLY on the throwaway branch; dev is untouched and the branch self-destructs at TTL."
+}

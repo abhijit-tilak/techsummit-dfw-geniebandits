@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-08-28T04:26:44.739865Z",
+  "branch": "geniebandits-dev",
+  "endpoint_host": "ep-wandering-dew-d15vttwi.database.us-west-2.cloud.databricks.com",
+  "connected": true,
+  "server_version": "PostgreSQL 17.11 (32e7196) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit",
+  "current_database": "databricks_postgres",
+  "current_user": "abhijit.tilak@databricks.com",
+  "server_now": "2026-08-28 04:26:46.436977+00:00",
+  "installed_extensions": {
+    "plpgsql": "1.0"
+  }
+}
