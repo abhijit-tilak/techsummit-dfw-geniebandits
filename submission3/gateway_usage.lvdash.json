@@ -1,0 +1,499 @@
+{
+  "datasets": [
+    {
+      "name": "ds_gateway_usage",
+      "displayName": "Gateway usage (app + agent + MCP)",
+      "queryLines": [
+        "SELECT source, endpoint, decision, request_ts,\n",
+        "       COALESCE(actual_cost_usd, est_cost_usd, 0) AS cost_usd,\n",
+        "       CASE WHEN decision LIKE '%block%' THEN 1 ELSE 0 END AS blocked\n",
+        "FROM (\n",
+        "  SELECT source, endpoint, decision, request_ts, actual_cost_usd, est_cost_usd FROM rkm_sandbox_1_catalog.demo_workshop_northpeak_retail_stockout_markdown_rescue.app_inference_table\n",
+        "  UNION ALL\n",
+        "  SELECT source, endpoint, decision, request_ts, actual_cost_usd, est_cost_usd FROM rkm_sandbox_1_catalog.demo_workshop_northpeak_retail_stockout_markdown_rescue.agent_inference_table\n",
+        ")\n"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "usage",
+      "displayName": "AI Gateway Usage & Budgets",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": 2,
+      "layout": [
+        {
+          "widget": {
+            "name": "title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# NorthPeak \u2014 Unity Gateway: Usage & Budgets\nBounded, visible, attributable AI spend across the app, the coding agent, and the MCP."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "c_calls",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_gateway_usage",
+                  "fields": [
+                    {
+                      "name": "total_calls",
+                      "expression": "COUNT(`request_ts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_calls",
+                  "displayName": "Total governed calls",
+                  "format": {
+                    "type": "number",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 0
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Total governed calls"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "c_cost",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_gateway_usage",
+                  "fields": [
+                    {
+                      "name": "total_cost",
+                      "expression": "SUM(`cost_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_cost",
+                  "displayName": "Total AI spend ($)",
+                  "format": {
+                    "type": "number-currency",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 4
+                    },
+                    "currencyCode": "USD"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Total AI spend ($)"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "c_blocked",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_gateway_usage",
+                  "fields": [
+                    {
+                      "name": "blocked_calls",
+                      "expression": "SUM(`blocked`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "blocked_calls",
+                  "displayName": "Calls blocked (budget+guardrail)",
+                  "format": {
+                    "type": "number",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 0
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Calls blocked (budget+guardrail)"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "c_sources",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_gateway_usage",
+                  "fields": [
+                    {
+                      "name": "sources",
+                      "expression": "COUNT(DISTINCT `source`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sources",
+                  "displayName": "Governed sources (app/agent/mcp)",
+                  "format": {
+                    "type": "number",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 0
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Governed sources (app/agent/mcp)"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "b_source",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_gateway_usage",
+                  "fields": [
+                    {
+                      "name": "source",
+                      "expression": "`source`"
+                    },
+                    {
+                      "name": "calls",
+                      "expression": "COUNT(`request_ts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "frame": {
+                "showTitle": true,
+                "title": "Calls by source (app / coding_agent / mcp)"
+              },
+              "encodings": {
+                "x": {
+                  "fieldName": "source",
+                  "displayName": "Source",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "calls",
+                  "displayName": "Calls",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "b_endpoint",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_gateway_usage",
+                  "fields": [
+                    {
+                      "name": "endpoint",
+                      "expression": "`endpoint`"
+                    },
+                    {
+                      "name": "cost",
+                      "expression": "SUM(`cost_usd`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "frame": {
+                "showTitle": true,
+                "title": "Spend by governed endpoint ($)"
+              },
+              "encodings": {
+                "x": {
+                  "fieldName": "endpoint",
+                  "displayName": "Gateway endpoint",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "cost",
+                  "displayName": "Calls",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 5,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "b_decision",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_gateway_usage",
+                  "fields": [
+                    {
+                      "name": "decision",
+                      "expression": "`decision`"
+                    },
+                    {
+                      "name": "calls",
+                      "expression": "COUNT(`request_ts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "frame": {
+                "showTitle": true,
+                "title": "Decisions (allowed vs blocked)"
+              },
+              "encodings": {
+                "x": {
+                  "fieldName": "decision",
+                  "displayName": "Decision",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "calls",
+                  "displayName": "Calls",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "decision",
+                  "displayName": "Decision",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "allowed",
+                        "color": "#3C6997"
+                      },
+                      {
+                        "value": "budget_block",
+                        "color": "#E5484D"
+                      },
+                      {
+                        "value": "guardrail_block",
+                        "color": "#FFB020"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 5,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "t_calls",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_gateway_usage",
+                  "fields": [
+                    {
+                      "name": "source",
+                      "expression": "`source`"
+                    },
+                    {
+                      "name": "endpoint",
+                      "expression": "`endpoint`"
+                    },
+                    {
+                      "name": "decision",
+                      "expression": "`decision`"
+                    },
+                    {
+                      "name": "cost_usd",
+                      "expression": "`cost_usd`"
+                    },
+                    {
+                      "name": "request_ts",
+                      "expression": "`request_ts`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "table",
+              "frame": {
+                "showTitle": true,
+                "title": "Recent governed calls (investigate via inference tables)"
+              },
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "source",
+                    "displayName": "source"
+                  },
+                  {
+                    "fieldName": "endpoint",
+                    "displayName": "endpoint"
+                  },
+                  {
+                    "fieldName": "decision",
+                    "displayName": "decision"
+                  },
+                  {
+                    "fieldName": "cost_usd",
+                    "displayName": "cost_usd"
+                  },
+                  {
+                    "fieldName": "request_ts",
+                    "displayName": "request_ts"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 12,
+            "height": 6
+          }
+        }
+      ]
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    }
+  }
+}

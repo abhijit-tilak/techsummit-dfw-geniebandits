@@ -1,0 +1,82 @@
+================================================================================
+Coding-agent thread — governed via the Unity Gateway (Section C + bonus)
+================================================================================
+Extends governance to agentic workflows: the coding agent's LLM traffic AND its
+MCP calls are routed through a governed gateway. The agent has its OWN governed
+endpoint (northpeak-agent-gateway) distinct from the app's, with its own inference
+table (gw_agent / agent_inference_table.json).
+
+--------------------------------------------------------------------------------
+1) The call to ucode (coding agent), model routed through the governed endpoint
+--------------------------------------------------------------------------------
+# The coding agent's model calls are pointed at the governed Databricks endpoint,
+# so every agent LLM invocation is bounded (rate limits + $0.05 budget), guarded
+# (safety/PII + all-data guardrail), and traced (inference table).
+
+$ export UCODE_MODEL_BASE_URL="https://fe-sandbox-rkm-sandbox-1.cloud.databricks.com/serving-endpoints"
+$ export UCODE_MODEL_ENDPOINT="northpeak-agent-gateway"
+$ export UCODE_GATEWAY_INFERENCE_TABLE="rkm_sandbox_1_catalog.demo_workshop_northpeak_retail_stockout_markdown_rescue.agent_inference_table"
+
+$ ucode --model-endpoint "$UCODE_MODEL_ENDPOINT" \
+        --model-base-url "$UCODE_MODEL_BASE_URL" \
+        --mcp-config ./.mcp/agent_mcp.json \
+        "Post the AI-spend governance report to my Slack."
+
+[ucode] model provider = databricks (governed)
+[ucode] endpoint       = northpeak-agent-gateway   (external-model gateway)
+[ucode] every model call + MCP-triggered model call is logged to gw_agent
+[ucode] loading MCP servers from ./.mcp/agent_mcp.json ...
+
+--------------------------------------------------------------------------------
+2) MCP configuration (.mcp/agent_mcp.json) — MCP traffic routed through gateway
+--------------------------------------------------------------------------------
+{
+  "model": {
+    "provider": "databricks",
+    "base_url": "https://fe-sandbox-rkm-sandbox-1.cloud.databricks.com/serving-endpoints",
+    "endpoint": "northpeak-agent-gateway",
+    "comment": "All coding-agent LLM calls (including those triggered by MCP tool use) route through the governed gateway."
+  },
+  "mcpServers": {
+    "slack": {
+      "command": "slack-mcp-server",
+      "transport": "stdio",
+      "env": {
+        "SLACK_MCP_MODEL_ENDPOINT": "northpeak-agent-gateway",
+        "SLACK_MCP_MODEL_BASE_URL": "https://fe-sandbox-rkm-sandbox-1.cloud.databricks.com/serving-endpoints"
+      },
+      "comment": "Any summarization/analysis the Slack MCP performs is also routed through the governed gateway, so MCP calls are bounded + traced."
+    }
+  }
+}
+
+--------------------------------------------------------------------------------
+3) The agent calling the Slack MCP (real calls, this session)
+--------------------------------------------------------------------------------
+[agent] I'll gather channels, resolve the recipient, and post the report.
+
+>>> MCP slack.slack_read_api_call  endpoint="conversations.list"  params={"types":"public_channel","limit":15}
+<<< ok: 15 channels (general, random, eng-cluster-team, outage, field-eng, ...)
+
+>>> MCP slack.slack_read_api_call  endpoint="users.lookupByEmail"  params={"email":"abhijit.tilak@databricks.com"}
+<<< ok: user U071FP2EZ52 (Abhijit Tilak, Solutions Architect)
+
+>>> MCP slack.slack_write_api_call  endpoint="chat.postMessage"
+    params={"channel":"U071FP2EZ52","text":"*NorthPeak — AI Spend Governance Report (Unity Gateway)* ..."}
+<<< ok: true   channel=D0716QWMD7G   ts=1787898327.799779
+    message posted (bot slack-mcp-server, footer: "Sent with Slack MCP")
+
+[agent] Posted the governance report to your Slack DM. Summary:
+        • App  -> northpeak-ai-gateway (gw_app);  Coding agent -> northpeak-agent-gateway (gw_agent)
+        • $0.05 per-call budget block + all-Lakebase-data guardrail enforced
+        • The weekend $1,200 runaway would now be blocked before execution.
+
+--------------------------------------------------------------------------------
+Governance result
+--------------------------------------------------------------------------------
+- Coding-agent LLM calls: routed through northpeak-agent-gateway; logged in
+  results/agent_inference_table.json (1 allowed / 1 budget_block / 1 guardrail_block).
+- MCP calls: declared to route through the same governed gateway; the Slack MCP
+  call above is real (channel D0716QWMD7G, ts 1787898327.799779).
+- The coding agent's spend is now bounded, visible, and attributable — separate
+  from the app's, per-endpoint.
