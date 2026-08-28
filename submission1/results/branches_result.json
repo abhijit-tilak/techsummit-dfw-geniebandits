@@ -1,0 +1,23 @@
+[
+  {
+    "name": "projects/dbdemos-asset-generator/branches/geniebandits-forecast",
+    "state": "READY",
+    "parent": null,
+    "expiry": "2026-08-28T08:25:41Z",
+    "created": "2026-08-28T04:25:41Z"
+  },
+  {
+    "name": "projects/dbdemos-asset-generator/branches/geniebandits-dev",
+    "state": "READY",
+    "parent": null,
+    "expiry": "",
+    "created": "2026-08-28T04:23:52Z"
+  },
+  {
+    "name": "projects/dbdemos-asset-generator/branches/production",
+    "state": "READY",
+    "parent": null,
+    "expiry": "",
+    "created": "2026-08-27T17:41:09Z"
+  }
+]
