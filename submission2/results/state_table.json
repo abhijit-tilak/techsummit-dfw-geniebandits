@@ -1,0 +1,57 @@
+{
+  "exported_at": "2026-08-28T05:41:48.083095+00:00",
+  "branch": "geniebandits-dev",
+  "table": "northpeak_ops.workflow_state (Lakebase observability)",
+  "trigger_events": 2,
+  "decision_events": 1,
+  "rows": [
+    {
+      "event_id": 1,
+      "event_type": "trigger",
+      "trigger_source": "scheduled_job",
+      "job_run_ref": "unknown",
+      "action_id": null,
+      "store_id": null,
+      "product_id": null,
+      "decision": null,
+      "flagged_count": 771,
+      "detail": {
+        "view": "northern_coldweather_stockouts_needing_decision"
+      },
+      "created_at": "2026-08-28 05:24:26.087681+00:00"
+    },
+    {
+      "event_id": 2,
+      "event_type": "trigger",
+      "trigger_source": "scheduled_job",
+      "job_run_ref": "512688725663836",
+      "action_id": null,
+      "store_id": null,
+      "product_id": null,
+      "decision": null,
+      "flagged_count": 771,
+      "detail": {
+        "view": "northern_coldweather_stockouts_needing_decision"
+      },
+      "created_at": "2026-08-28 05:34:54.847699+00:00"
+    },
+    {
+      "event_id": 4,
+      "event_type": "decision",
+      "trigger_source": null,
+      "job_run_ref": null,
+      "action_id": 10,
+      "store_id": "STORE-0108",
+      "product_id": "SKU-APP-04412",
+      "decision": "corrected_and_approved",
+      "flagged_count": null,
+      "detail": {
+        "approver": "priya.raghavan",
+        "proposed_units": 100,
+        "committed_units": 60,
+        "net_recaptured_value": 53569.28
+      },
+      "created_at": "2026-08-28 05:41:47.776016+00:00"
+    }
+  ]
+}

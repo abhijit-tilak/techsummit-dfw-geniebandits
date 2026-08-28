@@ -16,9 +16,8 @@ SELECT
   round(s.lost_sales_exposure_usd::numeric, 2) AS lost_sales_exposure_usd,
   round(s.lost_sales_exposure_usd::numeric, 2) AS priority_score,   -- higher = act first
   CASE
-    WHEN ra.action_id IS NULL              THEN 'NEEDS_DECISION'
-    WHEN ra.committed_at IS NOT NULL       THEN 'COMMITTED_' || upper(ra.status)
-    ELSE 'PROPOSED_' || upper(ra.status)
+    WHEN ra.action_id IS NULL THEN 'NEEDS_DECISION'
+    ELSE 'COMMITTED_' || upper(ra.status)
   END AS flag,
   ra.action_id,
   ra.chosen_move,
@@ -27,8 +26,10 @@ SELECT
 FROM public.store_sku_position_synced s
 JOIN northpeak_ops.stores   st ON st.store_id  = s.store_id
 JOIN northpeak_ops.products p  ON p.product_id = s.product_id
+-- only a COMMITTED decision resolves a row; uncommitted proposals still surface
 LEFT JOIN northpeak_ops.recovery_actions ra
        ON ra.store_id = s.store_id AND ra.product_id = s.product_id
+      AND ra.committed_at IS NOT NULL
 WHERE s.position_status = 'stockout'
   AND st.climate_zone   = 'North'
   AND p.seasonality     = 'cold_weather'
