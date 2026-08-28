@@ -7,8 +7,9 @@ Rescue app. Every artifact here was **executed live** against the Lakebase proje
 
 ## How it maps to the rubric
 
-Legend: ✅ built **and** ran (evidence committed) · ⧗ built + prepared, one UI click
-away (reverse Lakehouse Sync is UI-only).
+Legend: ✅ built **and** ran (evidence committed). All 17 rows are now verified —
+reverse Lakehouse Sync (the one UI-only step) was enabled and its SCD2 evidence
+captured.
 
 ### Lakehouse ↔ Lakebase sync
 
@@ -19,8 +20,8 @@ away (reverse Lakehouse Sync is UI-only).
 | Operational schema modeled: related tables + keys | ✅ | `migrations/001_operational_schema.sql` | `results/operational_schema_result.json` (5 FKs) |
 | Separate writable Postgres tables ≠ read-only synced | ✅ | migration 001 (`northpeak_ops.*`) vs `public.store_sku_position_synced` | `results/writable_proof.json` |
 | Sync defined as code (Terraform / not UI-only) | ✅ | `sync.tf` + `05_synced_table.sh` | `results/synced_table_result.json` |
-| Reverse Lakehouse Sync → UC Delta | ⧗ | `reverse_sync/` (prepared: REPLICA IDENTITY FULL set) | `reverse_sync/REVERSE_SYNC_UI_STEPS.md` → `results/reverse_sync_sample.json` |
-| Reverse Delta shows SCD2 history + metadata cols | ⧗ | `reverse_sync/11_capture_reverse_sync.py` | → `results/reverse_scd2_result.json` |
+| Reverse Lakehouse Sync → UC Delta | ✅ | `reverse_sync/` (sync STREAMING on both writable tables) | `results/reverse_sync_sample.json` |
+| Reverse Delta shows SCD2 history + metadata cols | ✅ | `reverse_sync/11_capture_reverse_sync.py` | `results/reverse_scd2_result.json` (insert → update_preimage → update_postimage) |
 
 ### Branching
 

@@ -1,0 +1,35 @@
+{
+  "captured_at": "2026-08-28T04:59:05.608880+00:00",
+  "history_table": "rkm_sandbox_1_catalog.demo_workshop_northpeak_retail_stockout_markdown_rescue.lb_recovery_actions_history",
+  "tracked_action_id": 5,
+  "scd2_note": "insert then update yields insert / update_preimage / update_postimage rows; system metadata columns _pg_change_type/_pg_lsn/_pg_xid/_timestamp/_sort_by are present.",
+  "change_history": [
+    {
+      "_pg_change_type": "insert",
+      "_pg_lsn": "63745608",
+      "_pg_xid": "5154",
+      "_sort_by": "4",
+      "_timestamp": "2026-08-28T04:58:43.948",
+      "action_id": "5",
+      "status": "pending"
+    },
+    {
+      "_pg_change_type": "update_preimage",
+      "_pg_lsn": "63746600",
+      "_pg_xid": "5155",
+      "_sort_by": "5",
+      "_timestamp": "2026-08-28T04:58:46.025",
+      "action_id": "5",
+      "status": "pending"
+    },
+    {
+      "_pg_change_type": "update_postimage",
+      "_pg_lsn": "63746600",
+      "_pg_xid": "5155",
+      "_sort_by": "6",
+      "_timestamp": "2026-08-28T04:58:46.025",
+      "action_id": "5",
+      "status": "approved"
+    }
+  ]
+}
