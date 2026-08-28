@@ -55,10 +55,33 @@ python 02_assist.py               # explain + what-if (Lakebase Search) + memo
 python 03_act.py                  # propose -> correct -> commit -> closed-loop re-read
 ```
 
+## Deployed Databricks App (live demo)
+
+The Build 2 decision loop is demoed **live in the deployed Databricks App** `dbgen-northpeak`
+(RUNNING at https://dbgen-northpeak-7474644154611302.aws.databricksapps.com). Its source is
+version-controlled here under `app/` (Node/Express + vanilla JS; `app.yaml`, `server.js`,
+`public/`). The app's data matches Build 1/2 exactly — same hero (**STORE-0108 Missoula,
+Summit Down Parka, $53,569**), same KPIs (771 stockouts / $15.9M lost-sales).
+
+Live loop exercised end-to-end (evidence: `results/app_demo_result.json`):
+1. **Visualize** — `/api/kpis`, `/api/shortfalls` → STORE-0108 ranked #1.
+2. **Assist** — `/api/recommendations/STORE-0108/SKU-APP-04412` → transfer ranked #1
+   (net $24,632), plus `/api/recovery` (vector substitutes + FM rationale).
+3. **Act** — `/api/approve` writes to `recovery_approvals` (+ a markdown-hold on the source
+   store); **the person approves/corrects before commit**.
+4. **Closed loop** — `/api/approvals` reflects the committed decision on the next read; the
+   UI now shows a **"Committed decision"** banner (see fix below).
+
+**Fix applied this session:** the Approve button hung on "Approving…" because the frontend's
+`handleApprove` never reset the button and had no error handling or loop-close. Patched
+`app/public/app.js` to (a) set the button to **"Approved ✓"** on success with a `.catch`,
+and (b) read the committed record back from `/api/approvals` and render a **closed-loop
+confirmation banner**. Redeployed via `databricks apps deploy` (SUCCEEDED).
+
 ## Notes
 
-- **Deployed app:** the Build 1 app `dbgen-northpeak` is deployed and RUNNING; it currently
-  reads the `production` branch / `dbgen_northpeak`. Build 2 is built against the Build 1
-  **dev branch** (`geniebandits-dev`) per the requirement, where the Build 1 synced table and
-  writable tables live. The loop above is the app's backend logic exercised end-to-end.
-- The synced table is **never written**; all writes target `northpeak_ops.*`.
+- The deployed app reads the `production` branch / `dbgen_northpeak` (its own `northpeak_ops`
+  with `gold_*` + `recovery_approvals`); the 7 validator exports above were generated on the
+  Build 1 **dev branch** (`geniebandits-dev`) per the "build against the dev branch"
+  requirement. Same decision-loop behavior, same hero — the live app is the running surface.
+- The synced table is **never written**; all writes target writable `northpeak_ops` tables.
