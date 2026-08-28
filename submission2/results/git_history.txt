@@ -1,0 +1,27 @@
+* 26feaa2 (HEAD -> feat/build2-decision-app) build2 layer 4 (Act): closed-loop write-back + decision chain
+* eb856ad build2 layer 3 (Assist): explain + what-if + memo over Lakebase Search
+* e5c47ce build2 layer 2 (Visualize trigger): scheduled Databricks Job as code
+* bc3120b build2 layer 1 (Visualize): decision view over read-only synced table
+* 9c415b3 (origin/main, origin/HEAD, main) submission1: gitignore __pycache__/.DS_Store; untrack committed .pyc
+*   701b558 Merge pull request #2 from abhijit-tilak/feat/execution-evidence
+|\  
+| * 4ae78c1 (origin/feat/execution-evidence, feat/execution-evidence) submission1: committed git/promotion evidence (grader can't see GitHub)
+| * 27a07d8 submission1: executed evidence notebooks (schema, writable tables, tests)
+|/  
+* 1cdbfe5 submission1: capture reverse Lakehouse Sync SCD2 evidence (all 17 rows verified)
+*   4849ccb Merge pull request #1 from abhijit-tilak/feat/lakebase-rubric
+|\  
+| * 6dd6fc9 (origin/feat/lakebase-rubric, feat/lakebase-rubric) submission1: reverse-sync UI handoff + judge-facing README/rubric map
+| * fb3cc30 submission1: throwaway forecasting branch (isolated what-if, scale-to-zero)
+| * 4de1bba submission1: committed tests validating migrations 001+002 (8/8 pass)
+| * bb6650f submission1: core low-latency domain query (synced + operational join)
+| * 416f7e4 submission1: governed UC MV -> Lakebase forward sync, defined as code
+| * 0e3c7ea submission1: Lakebase hybrid search (full-text + vector) over product text
+| * fa05e47 submission1: operational schema migration (related tables + keys, writable)
+| * 0af0ed8 submission1: Lakebase branching as code + connectivity check
+|/  
+* 3e45b9b (docs/readme) docs: write full README for NorthPeak Stockout & Markdown Rescue
+* 3964dc0 app is now running
+* adeeac1 feat: deploy all resources on rkm_sandbox_1_catalog + brand assets
+* 77e373f feat: deploy NorthPeak Store Operations assets with story personas
+* 698a204 Initial commit
