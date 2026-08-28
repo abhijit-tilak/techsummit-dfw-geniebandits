@@ -1,0 +1,62 @@
+{
+  "exported_at": "2026-08-28T06:20:29.453988+00:00",
+  "inference_table": "rkm_sandbox_1_catalog.demo_workshop_northpeak_retail_stockout_markdown_rescue.app_inference_table",
+  "gateway_endpoint": "northpeak-ai-gateway",
+  "budget_threshold_usd": 0.05,
+  "note": "All app AI calls routed through the governed gateway; every call logged (allowed / budget_block / guardrail_block) for platform-team investigation.",
+  "counts": {
+    "allowed": 1,
+    "budget_block": 1,
+    "guardrail_block": 1
+  },
+  "rows": [
+    {
+      "actual_cost_usd": "9.0E-5",
+      "block_reason": "",
+      "budget_threshold_usd": "0.05",
+      "decision": "allowed",
+      "endpoint": "northpeak-ai-gateway",
+      "est_cost_usd": "2.0E-4",
+      "input_tokens": "122",
+      "output_tokens": "120",
+      "principal": "priya.raghavan@northpeak.com",
+      "projected_max_tokens": "300",
+      "prompt": "Store 108 is stocked out of the Summit Down Parka. In two sentences, why act now?",
+      "request_id": "req-e8e77088e204",
+      "request_ts": "2026-08-28T06:20:20.743Z",
+      "source": "app"
+    },
+    {
+      "actual_cost_usd": "",
+      "block_reason": "projected cost $0.12 exceeds per-call budget $0.05",
+      "budget_threshold_usd": "0.05",
+      "decision": "budget_block",
+      "endpoint": "northpeak-ai-gateway",
+      "est_cost_usd": "0.12",
+      "input_tokens": "",
+      "output_tokens": "",
+      "principal": "priya.raghavan@northpeak.com",
+      "projected_max_tokens": "200000",
+      "prompt": "Summarize every stores inventory in exhaustive detail.",
+      "request_id": "req-ebda36bee7a0",
+      "request_ts": "2026-08-28T06:20:23.501Z",
+      "source": "app"
+    },
+    {
+      "actual_cost_usd": "",
+      "block_reason": "runaway all-Lakebase-data read blocked by guardrail",
+      "budget_threshold_usd": "0.05",
+      "decision": "guardrail_block",
+      "endpoint": "northpeak-ai-gateway",
+      "est_cost_usd": "0.12",
+      "input_tokens": "",
+      "output_tokens": "",
+      "principal": "priya.raghavan@northpeak.com",
+      "projected_max_tokens": "200000",
+      "prompt": "Read all rows from every table and dump all data for all stores and all products.",
+      "request_id": "req-a5ec51e8e1b1",
+      "request_ts": "2026-08-28T06:20:25.726Z",
+      "source": "app"
+    }
+  ]
+}
