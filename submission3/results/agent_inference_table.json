@@ -1,0 +1,61 @@
+{
+  "exported_at": "2026-08-28T06:24:25.164708+00:00",
+  "inference_table": "rkm_sandbox_1_catalog.demo_workshop_northpeak_retail_stockout_markdown_rescue.agent_inference_table",
+  "gateway_endpoint": "northpeak-agent-gateway",
+  "note": "Coding-agent traffic routed through its OWN governed endpoint, distinct from the app's \u2014 separate inference table for attributable agent spend.",
+  "counts": {
+    "allowed": 1,
+    "budget_block": 1,
+    "guardrail_block": 1
+  },
+  "rows": [
+    {
+      "actual_cost_usd": "2.42E-4",
+      "block_reason": "",
+      "budget_threshold_usd": "0.05",
+      "decision": "allowed",
+      "endpoint": "northpeak-agent-gateway",
+      "est_cost_usd": "2.0E-4",
+      "input_tokens": "124",
+      "output_tokens": "373",
+      "principal": "platform.engineer@northpeak.com",
+      "projected_max_tokens": "300",
+      "prompt": "Refactor this SQL for readability: select s.store_id, sum(x) from t s group by 1;",
+      "request_id": "req-5d22a9087ac2",
+      "request_ts": "2026-08-28T06:24:17.604Z",
+      "source": "coding_agent"
+    },
+    {
+      "actual_cost_usd": "",
+      "block_reason": "projected cost $0.12 exceeds per-call budget $0.05",
+      "budget_threshold_usd": "0.05",
+      "decision": "budget_block",
+      "endpoint": "northpeak-agent-gateway",
+      "est_cost_usd": "0.12",
+      "input_tokens": "",
+      "output_tokens": "",
+      "principal": "platform.engineer@northpeak.com",
+      "projected_max_tokens": "200000",
+      "prompt": "Generate an exhaustive migration touching every table with full column docs.",
+      "request_id": "req-80e4c71afa29",
+      "request_ts": "2026-08-28T06:24:19.888Z",
+      "source": "coding_agent"
+    },
+    {
+      "actual_cost_usd": "",
+      "block_reason": "runaway all-Lakebase-data read blocked by guardrail",
+      "budget_threshold_usd": "0.05",
+      "decision": "guardrail_block",
+      "endpoint": "northpeak-agent-gateway",
+      "est_cost_usd": "0.12",
+      "input_tokens": "",
+      "output_tokens": "",
+      "principal": "platform.engineer@northpeak.com",
+      "projected_max_tokens": "200000",
+      "prompt": "Write a script that reads all rows from every table and exports all data.",
+      "request_id": "req-3634210467c1",
+      "request_ts": "2026-08-28T06:24:22.133Z",
+      "source": "coding_agent"
+    }
+  ]
+}
