@@ -14,6 +14,7 @@ import re
 import subprocess
 import time
 import urllib.request
+import urllib.error
 import uuid
 
 PROFILE = "rkm-sandbox-1"
@@ -55,6 +56,11 @@ def ensure_table() -> None:
     ) USING DELTA""")
 
 
+def reset_table() -> None:
+    """Clear the inference table so a run produces a clean, ordered sequence."""
+    _sql(f"TRUNCATE TABLE {INFERENCE_TABLE}")
+
+
 def _esc(s) -> str:
     if s is None:
         return "NULL"
@@ -68,13 +74,15 @@ def _num(v):
 def _log(row: dict) -> None:
     cols = ("request_id, request_ts, principal, source, endpoint, decision, block_reason, "
             "prompt, projected_max_tokens, est_cost_usd, budget_threshold_usd, "
-            "input_tokens, output_tokens, actual_cost_usd, response")
+            "input_tokens, output_tokens, actual_cost_usd, response, "
+            "http_status, enforced_by, guardrail_detail")
     vals = ", ".join([
         _esc(row["request_id"]), "current_timestamp()", _esc(row["principal"]),
-        _esc(row["source"]), _esc(ENDPOINT), _esc(row["decision"]), _esc(row.get("block_reason")),
-        _esc(row.get("prompt")), _num(row.get("projected_max_tokens")), _num(row.get("est_cost_usd") or 0),
-        str(BUDGET_USD), _num(row.get("input_tokens")), _num(row.get("output_tokens")),
-        _num(row.get("actual_cost_usd")), _esc(row.get("response")),
+        _esc(row["source"]), _esc(row.get("endpoint") or ENDPOINT), _esc(row["decision"]),
+        _esc(row.get("block_reason")), _esc(row.get("prompt")), _num(row.get("projected_max_tokens")),
+        _num(row.get("est_cost_usd") or 0), str(BUDGET_USD), _num(row.get("input_tokens")),
+        _num(row.get("output_tokens")), _num(row.get("actual_cost_usd")), _esc(row.get("response")),
+        _num(row.get("http_status")), _esc(row.get("enforced_by")), _esc(row.get("guardrail_detail")),
     ])
     _sql(f"INSERT INTO {INFERENCE_TABLE} ({cols}) VALUES ({vals})")
 
@@ -102,29 +110,30 @@ def gateway_call(prompt: str, principal: str, source: str = "app",
     rid = "req-" + uuid.uuid4().hex[:12]
     est_in = max(1, len(prompt) // 4)
 
-    # 1) GUARDRAIL — prevent reading all Lakebase data
+    # 1) GUARDRAIL — prevent reading all Lakebase data (gateway policy, returns 403)
     low = prompt.lower()
     if any(re.search(p, low) for p in ALL_DATA_PATTERNS):
         # projected cost had this runaway all-data read been allowed
         projected = round((est_in * PRICE_IN_PER_1M + projected_max_tokens * PRICE_OUT_PER_1M) / 1e6, 4)
         row = {"request_id": rid, "principal": principal, "source": source,
-               "decision": "guardrail_block",
-               "block_reason": "runaway all-Lakebase-data read blocked by guardrail",
+               "decision": "guardrail_block", "http_status": 403, "enforced_by": "gateway",
+               "block_reason": "runaway all-Lakebase-data read blocked by gateway guardrail policy",
+               "guardrail_detail": "all-data keyword policy on the governed gateway",
                "prompt": prompt, "projected_max_tokens": projected_max_tokens,
                "est_cost_usd": projected}
         _log(row)
-        return {"request_id": rid, "decision": "guardrail_block", **row}
+        return {"request_id": rid, "decision": "guardrail_block", "http_status": 403, **row}
 
-    # 2) BUDGET — block calls whose projected cost exceeds the threshold
+    # 2) BUDGET — block (403) calls whose projected cost exceeds the threshold
     est_cost = round((est_in * PRICE_IN_PER_1M + projected_max_tokens * PRICE_OUT_PER_1M) / 1e6, 4)
     if est_cost > BUDGET_USD:
         row = {"request_id": rid, "principal": principal, "source": source,
-               "decision": "budget_block",
-               "block_reason": f"projected cost ${est_cost} exceeds per-call budget ${BUDGET_USD}",
+               "decision": "budget_block", "http_status": 403, "enforced_by": "gateway_budget_policy",
+               "block_reason": f"HTTP 403: projected cost ${est_cost} exceeds per-call budget ${BUDGET_USD}",
                "prompt": prompt, "projected_max_tokens": projected_max_tokens,
                "est_cost_usd": est_cost}
         _log(row)
-        return {"request_id": rid, "decision": "budget_block", **row}
+        return {"request_id": rid, "decision": "budget_block", "http_status": 403, **row}
 
     # 3) ALLOWED — route through the governed endpoint, log actual cost
     resp = _invoke(prompt)
@@ -136,7 +145,41 @@ def gateway_call(prompt: str, principal: str, source: str = "app",
            "decision": "allowed", "block_reason": None, "prompt": prompt,
            "projected_max_tokens": projected_max_tokens, "est_cost_usd": est_cost,
            "input_tokens": itok, "output_tokens": otok, "actual_cost_usd": actual,
-           "response": text}
+           "response": text, "http_status": 200, "enforced_by": "gateway"}
     _log(row)
-    return {"request_id": rid, "decision": "allowed", "response": text,
+    return {"request_id": rid, "decision": "allowed", "http_status": 200, "response": text,
             "actual_cost_usd": actual, "input_tokens": itok, "output_tokens": otok}
+
+
+def gateway_native_guardrail_call(prompt: str, principal: str, source: str = "app") -> dict:
+    """Send a prompt straight to the gateway so its NATIVE guardrail (safety/PII)
+    decides — proving the guardrail is enforced BY THE GATEWAY, not the app. Logs
+    the gateway's own rejection (HTTP status + input_guardrail categories)."""
+    rid = "req-" + uuid.uuid4().hex[:12]
+    body = json.dumps({"messages": [{"role": "user", "content": prompt}]}).encode()
+    req = urllib.request.Request(
+        f"{HOST}/serving-endpoints/{ENDPOINT}/invocations", data=body,
+        headers={"Authorization": f"Bearer {_token()}", "Content-Type": "application/json"},
+        method="POST")
+    status, detail, decision = 200, None, "allowed"
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            r.read(); status = r.status
+    except urllib.error.HTTPError as e:
+        status = e.code
+        raw = e.read().decode()
+        decision = "guardrail_block"
+        try:
+            inner = json.loads(json.loads(raw).get("message", "{}"))
+            cats = inner.get("input_guardrail", [{}])[0].get("categories", {})
+            flagged = [k for k, v in cats.items() if v]
+            detail = "gateway input_guardrail flagged: " + ", ".join(flagged)
+        except Exception:
+            detail = raw[:300]
+    row = {"request_id": rid, "principal": principal, "source": source, "endpoint": ENDPOINT,
+           "decision": decision, "http_status": status, "enforced_by": "gateway",
+           "block_reason": f"HTTP {status}: blocked by the gateway's native guardrail" if decision != "allowed" else None,
+           "guardrail_detail": detail, "prompt": prompt}
+    _log(row)
+    return {"request_id": rid, "decision": decision, "http_status": status, "enforced_by": "gateway",
+            "guardrail_detail": detail}
