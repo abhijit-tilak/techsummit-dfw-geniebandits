@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "store_id": "STORE-0108",
+    "city": "Missoula",
+    "product_id": "SKU-APP-04412",
+    "product_name": "Summit Down Parka",
+    "on_hand_units": 0,
+    "exposure": "53569.28",
+    "velocity": "7.14"
+  },
+  "transfer_source": {
+    "store_id": "STORE-0213",
+    "city": "Charlotte",
+    "on_hand_units": 189
+  },
+  "proposed_units": 100,
+  "substitute_candidates": [
+    {
+      "product_id": "SKU-APP-04415",
+      "product_name": "Tundra Insulated Boots",
+      "seasonality": "cold_weather",
+      "unit_price": 189.99,
+      "unit_margin": 124.99000000000001
+    },
+    {
+      "product_id": "SKU-APP-04413",
+      "product_name": "Alpine Fleece Jacket",
+      "seasonality": "cold_weather",
+      "unit_price": 129.99,
+      "unit_margin": 87.99000000000001
+    },
+    {
+      "product_id": "SKU-APP-04414",
+      "product_name": "Glacier Thermal Base Layer",
+      "seasonality": "cold_weather",
+      "unit_price": 69.99,
+      "unit_margin": 47.989999999999995
+    },
+    {
+      "product_id": "SKU-APP-04416",
+      "product_name": "Polar Wool Beanie",
+      "seasonality": "cold_weather",
+      "unit_price": 34.99,
+      "unit_margin": 26.990000000000002
+    },
+    {
+      "product_id": "SKU-APP-10001",
+      "product_name": "Apparel Item 2",
+      "seasonality": "warm_weather",
+      "unit_price": 101.92,
+      "unit_margin": 41.56
+    }
+  ]
+}
