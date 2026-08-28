@@ -1,0 +1,76 @@
+{
+  "ran_at": "2026-08-28T06:04:23.744610+00:00",
+  "branch": "geniebandits-dev",
+  "index_table": "northpeak_ops.products (the Build 1 Lakebase Search index)",
+  "note": "Retrieval hits the SAME pgvector HNSW + tsvector GIN indexes created in Build 1 \u2014 not a separate vector store.",
+  "natural_language_query": "Summit Down Parka warm insulated cold weather substitute",
+  "lexical_tsquery": "summit | down | parka | warm | insulated | cold | weather | substitute",
+  "method": "hybrid: full-text (tsvector/GIN) + vector (pgvector/HNSW), RRF k=60",
+  "embedding_model": "databricks-gte-large-en",
+  "lakebase_search_indexes": [
+    {
+      "name": "products_embedding_hnsw",
+      "def": "CREATE INDEX products_embedding_hnsw ON northpeak_ops.products USING hnsw (embedding vector_cosine_ops)"
+    },
+    {
+      "name": "products_search_gin",
+      "def": "CREATE INDEX products_search_gin ON northpeak_ops.products USING gin (search_document)"
+    }
+  ],
+  "retrieved_rows": [
+    {
+      "product_id": "SKU-APP-04415",
+      "product_name": "Tundra Insulated Boots",
+      "seasonality": "cold_weather",
+      "unit_margin": "124.99",
+      "ft_rank": 1,
+      "vec_rank": 4,
+      "rrf_score": "0.03202"
+    },
+    {
+      "product_id": "SKU-APP-04413",
+      "product_name": "Alpine Fleece Jacket",
+      "seasonality": "cold_weather",
+      "unit_margin": "87.99",
+      "ft_rank": 5,
+      "vec_rank": 1,
+      "rrf_score": "0.03178"
+    },
+    {
+      "product_id": "SKU-APP-04414",
+      "product_name": "Glacier Thermal Base Layer",
+      "seasonality": "cold_weather",
+      "unit_margin": "47.99",
+      "ft_rank": 6,
+      "vec_rank": 2,
+      "rrf_score": "0.03128"
+    },
+    {
+      "product_id": "SKU-APP-04416",
+      "product_name": "Polar Wool Beanie",
+      "seasonality": "cold_weather",
+      "unit_margin": "26.99",
+      "ft_rank": 7,
+      "vec_rank": 3,
+      "rrf_score": "0.03080"
+    },
+    {
+      "product_id": "SKU-APP-10001",
+      "product_name": "Apparel Item 2",
+      "seasonality": "warm_weather",
+      "unit_margin": "41.56",
+      "ft_rank": 9,
+      "vec_rank": 35,
+      "rrf_score": "0.02502"
+    },
+    {
+      "product_id": "SKU-APP-10000",
+      "product_name": "Apparel Item 1",
+      "seasonality": "warm_weather",
+      "unit_margin": "38.52",
+      "ft_rank": 8,
+      "vec_rank": 47,
+      "rrf_score": "0.02405"
+    }
+  ]
+}

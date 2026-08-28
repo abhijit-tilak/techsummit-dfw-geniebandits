@@ -36,6 +36,14 @@ table. All artifacts were executed live; `results/*` are the committed outputs.
 Supporting: `results/closed_loop_view.json` (hero re-read → COMMITTED), `results/hero.json`
 (resolved hero + linked ids), `migrations/003_decision_loop.sql`, `trigger/` (scheduled job as code).
 
+**Retrieves from the Build 1 Lakebase Search index (execution evidence):**
+`notebooks/lakebase_search_evidence.ipynb` (executed, with outputs) and
+`results/lakebase_search_result.json` show the hybrid RRF query hitting the **same Build 1
+indexes** — `products_embedding_hnsw` (pgvector) + `products_search_gin` (full-text) on
+`northpeak_ops.products` — and returning ranked substitute candidates (both arms
+contributing). This is retrieval from the Build 1 Lakebase Search index, **not a separate
+vector store**. Regenerate with `python notebooks/_build_search_evidence.py`.
+
 ## Decision chain (linked record IDs)
 
 `STORE-0108` / `SKU-APP-04412` (Summit Down Parka) → view flags NEEDS_DECISION →
