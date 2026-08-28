@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NorthPeak Store Operations</title>
+  <script>
+    // Apply saved theme before first paint (no flash). Default: dark.
+    (function () {
+      var t = 'dark';
+      try { t = localStorage.getItem('np-theme') || 'dark'; } catch (e) {}
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-title">
+      <h1>&#9968; NorthPeak Store Operations</h1>
+      <div class="tagline">Right stock. Right store. Right now.</div>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" type="button" title="Toggle dark / light mode" aria-label="Toggle dark / light mode">&#9790;</button>
+  </header>
+  <nav class="nav-tabs">
+    <div class="nav-tab active" data-tab="operations">Operations</div>
+    <div class="nav-tab" data-tab="dashboard">Dashboard</div>
+    <div class="nav-tab" data-tab="assistant">AI Assistant</div>
+  </nav>
+  <div class="content" id="content"></div>
+  <div id="toast" class="toast" style="display:none"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

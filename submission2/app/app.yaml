@@ -1,0 +1,23 @@
+command:
+  - node
+  - server.js
+
+env:
+  - name: CATALOG
+    value: rkm_sandbox_1_catalog
+  - name: SCHEMA
+    value: demo_workshop_northpeak_retail_stockout_markdown_rescue
+  - name: WAREHOUSE_ID
+    value: fa7569cd826a3654
+  - name: GENIE_SPACE_ID
+    value: 01f1a23dfd3210498c8888db2845a0c0
+  - name: DASHBOARD_ID
+    value: 01f1a23813a81b94ae279383bb440981
+  - name: LAKEBASE_HOST
+    value: ep-polished-sunset-d10ml14n.database.us-west-2.cloud.databricks.com
+  - name: LAKEBASE_DB
+    value: dbgen_northpeak
+  - name: LAKEBASE_SCHEMA
+    value: northpeak_ops
+  - name: DATABRICKS_HOST
+    value: https://fe-sandbox-rkm-sandbox-1.cloud.databricks.com
